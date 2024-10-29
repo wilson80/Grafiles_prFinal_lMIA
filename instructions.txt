@@ -1,0 +1,4 @@
+instalar los siguientes librerias:
+
+ flask pymongo
+ python-flask-cors
