@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuración de la conexión a MongoDB
-uri = 'mongodb://pr2mia2024:1234@localhost:27018/proyecto2Mia?authSource=admin'
+uri = 'mongodb://pr2mia2024:1234@localhost:27017/proyecto2Mia?authSource=admin'
 client = MongoClient(uri)
 db = client['proyecto2Mia']
 usuarios_collection = db['users']

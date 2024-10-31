@@ -33,6 +33,8 @@ class AdminControlador
     {
         if ($rol !== 'administrador') {
             header('Location: controlador/dashboard.php');
+            // header('Location: controlador/dashboard.php');
+
             exit();
         }
     }
