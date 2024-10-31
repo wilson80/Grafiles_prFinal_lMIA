@@ -55,6 +55,7 @@ def create_routes(usuarios_collection):
     # OBTENER UN USUARIO POR ID
     @users_bp.route('/<string:user_id>', methods=['GET'])
     def get_user(user_id):
+        print(user_id)
         try:
             usuario = usuarios_collection.find_one({'_id': ObjectId(user_id)})
             if not usuario:

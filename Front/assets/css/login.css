@@ -1,0 +1,68 @@
+body {
+    background-color: #f0f2f5;
+    /* Color de fondo de Facebook */
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+}
+
+.login-container {
+    margin-top: 100px;
+}
+
+.card-title {
+    font-size: 24px;
+    color: #1877f2;
+    /* Azul de Facebook */
+    font-weight: bold;
+}
+
+.btn-facebook {
+    background-color: #1877f2;
+    border: none;
+    color: white;
+}
+
+.btn-facebook:hover {
+    background-color: #155db0;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 6px;
+}
+
+.form-select {
+    border-radius: 6px;
+}
+
+.forgot-password {
+    display: block;
+    margin-top: 10px;
+    color: #1877f2;
+    text-align: center;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.signup-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-link a {
+    color: #1877f2;
+    font-weight: bold;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
