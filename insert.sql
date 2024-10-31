@@ -21,14 +21,19 @@ db.users.find();
 db.folders.insertMany([
     {
         nombre: 'raiz',
-        id_usuario: "672360dca756abaa9ce99441",
+        id_usuario: "6723cca54deb5d9df9d5ac54",
         ficheroMadre: '0000000000',
         unica:true
     },
     {
         nombre: 'compartida',
-        id_usuario:  "672360dca756abaa9ce99441",
+        id_usuario:  "6723cca54deb5d9df9d5ac54",
         ficheroMadre: '1111111111',
         unica:true
     }
 ]);
+
+
+
+
+6723cca54deb5d9df9d5ac54

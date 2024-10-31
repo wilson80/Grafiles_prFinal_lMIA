@@ -1,0 +1,40 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pr2mia2024
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./Back
+      dockerfile: Dockerfile
+    container_name: python_backend
+    ports:
+      - "3500:3500"
+    environment:
+      MONGO_URI: "mongodb://pr2mia2024:1234@mongo:27017/proyecto2Mia?authSource=admin"
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./grafiles_mia
+      dockerfile: Dockerfile
+    container_name: php_frontend
+    ports:
+      - "8080:80"
+    volumes:
+      # - /opt/lampp/htdocs/grafiles_mia:/var/www/html
+      - /home/jonwilson/grafiles_mia:/var/www/html
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

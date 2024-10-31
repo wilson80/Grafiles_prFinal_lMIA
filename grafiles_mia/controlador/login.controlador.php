@@ -1,7 +1,8 @@
 <?php
 
 require_once "servicio/login.servise.php";
-define('API_URL', 'http://localhost:3500/connect');
+// define('API_URL', 'http://localhost:3500/connect');
+define('API_URL', 'http://python_backend:3500/connect');
 
 class LoginControlador
 {
