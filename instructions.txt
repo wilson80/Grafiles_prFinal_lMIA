@@ -2,3 +2,8 @@ instalar los siguientes librerias:
 
  flask pymongo
  python-flask-cors
+
+ requests
+ pip install 'Flask[async]'
+
+

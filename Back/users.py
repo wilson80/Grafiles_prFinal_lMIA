@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from pymongo import MongoClient
 from bson import ObjectId
 import hashlib
+import requests
+from folders import carpetas_bp  # Asegúrate de que la ruta sea correcta
 
 # Crear un blueprint para el manejo de usuarios
 users_bp = Blueprint('users', __name__)
@@ -39,6 +41,19 @@ def create_routes(usuarios_collection):
                 'rol': rol
             })
             nuevo_usuario = usuarios_collection.find_one({'_id': result.inserted_id})
+            data1 ={'nombre':'raiz', 'idU':str(result.inserted_id),'ficheroMadre':'0000000000'}
+            data2 ={'nombre':'compartida', 'idU':str(result.inserted_id),'ficheroMadre':'1111111111'}
+
+            carpeta1 = requests.post('http://localhost:3500/carpetas', json=data1)  # Ajusta la URL según tu configuración
+            carpeta2 = requests.post('http://localhost:3500/carpetas', json=data2)  # Ajusta la URL según tu configuración
+            if carpeta1.status_code != 201:
+                return f'Error al crear la carpeta "raiz": {carpeta1.text}', carpeta1.status_code
+
+            # Manejar la respuesta de la segunda solicitud
+            if carpeta2.status_code != 201:
+                return f'Error al crear la carpeta "compartida": {carpeta2.text}', carpeta2.status_code
+
+
             return jsonify(serialize_user(nuevo_usuario)), 201
         except Exception as e:
             return f'Error al insertar el usuario: {str(e)}', 500

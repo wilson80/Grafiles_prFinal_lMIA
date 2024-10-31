@@ -8,6 +8,7 @@
     <!-- Incluye Bootstrap CSS y Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         .area-principal {
             padding: 10px;
@@ -57,14 +58,12 @@
 
     <div class="area-principal" oncontextmenu="onRightClick(event, null, 0); return false;">
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Agregar</button>
-
         <div class="d-flex align-items-center mb-2">
             <button class="btn btn-secondary ms-2 mr-3" onclick="window.history.back();">
                 <i class="bi bi-arrow-left"></i>
             </button>
             <strong><?= $ruta ?></strong>
         </div>
-
 
         <div class="d-flex flex-wrap">
             <?php foreach ($carpetas as $carpeta): ?>
@@ -76,6 +75,41 @@
                     <div><?php echo htmlspecialchars($carpeta['nombre']); ?></div> <!-- Nombre de la carpeta debajo del ícono -->
                 </div>
             <?php endforeach; ?>
+            <?php foreach ($archivos as $archivo): ?>
+                <div class="text-center mx-3 my-2 position-relative"
+                    oncontextmenu="onRightClick(event, '<?php echo $archivo['_id']; ?>','<?php echo $archivo['nombre']; ?>',2,'<?php echo $archivo['fechamod']; ?>'); return false;">
+                    <a href="#" onclick="showFileModal('<?php echo $archivo['_id']; ?>')"
+                        class="btn btn-link position-relative">
+                        <?php if ($archivo['extension'] === '.jpg' || $archivo['extension'] === '.png'): ?>
+                            <i class="bi bi-file-image" style="font-size: 4rem; color: #28a745;"></i>
+                        <?php elseif ($archivo['extension'] === '.txt'): ?>
+                            <i class="bi bi-file-earmark-text" style="font-size: 4rem; color: #ffc107;"></i>
+                        <?php elseif ($archivo['extension'] === '.html'): ?>
+                            <i class="bi bi-filetype-html" style="font-size: 4rem; color: #17a2b8;"></i>
+                        <?php else: ?>
+                            <i class="bi bi-file-earmark" style="font-size: 4rem; color: #6c757d;"></i>
+                        <?php endif; ?>
+                    </a>
+                    <div><?php echo htmlspecialchars($archivo['nombre']);  ?><?php echo htmlspecialchars($archivo['extension']);  ?></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar el contenido de un archivo-->
+    <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fileModalLabel">Contenido del Archivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="cerrarModales()"></button>
+                </div>
+                <div class=" modal-body" id="fileContentMost">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cerrarModales()">Cerrar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -102,7 +136,7 @@
                     <!-- Formulario para agregar carpeta -->
                     <div id="folderForm" style="display:none; margin-top: 20px;">
                         <h6>Crear Carpeta</h6>
-                        <form id="addFolderForm" method="POST" action="http://localhost/grafiles_mia/?c=admin&a=GuardarCarpeta&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>">
+                        <form id="addFolderForm" method="POST" action="http://localhost/grafiles_mia/?c=admin&a=GuardarCarpeta&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>&ruta=<?= $ruta ?>">
                             <div class="mb-3">
                                 <label for="folderName" class="form-label">Nombre de la Carpeta</label>
                                 <input type="text" class="form-control" id="folderName" name="folderName" required>
@@ -114,14 +148,14 @@
                     <!-- Formulario para agregar archivo -->
                     <div id="fileForm" style="display:none; margin-top: 20px;">
                         <h6>Crear Archivo</h6>
-                        <form id="addFileForm">
+                        <form id="addFileForm" method="POST" action="http://localhost/grafiles_mia/?c=admin&a=GuardarArchivo&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>&ruta=<?= $ruta ?>">
                             <div class="mb-3">
                                 <label for="fileName" class="form-label">Nombre del Archivo</label>
-                                <input type="text" class="form-control" id="fileName" required>
+                                <input type="text" class="form-control" id="fileName" name="fileName" required>
                             </div>
                             <div class="mb-3">
                                 <label for="fileExtension" class="form-label">Extensión</label>
-                                <select class="form-select" id="fileExtension" required>
+                                <select class="form-select" id="fileExtension" name="fileExtension" required>
                                     <option value=".txt">.txt</option>
                                     <option value=".html">.html</option>
                                     <option value=".png">.png</option>
@@ -130,7 +164,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="fileContent" class="form-label">Contenido del Archivo</label>
-                                <textarea class="form-control" id="fileContent" rows="3" required></textarea>
+                                <textarea class="form-control" id="fileContent" name="fileContent" rows="5" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Guardar Archivo</button>
                         </form>
@@ -161,6 +195,7 @@
 
     <script>
         const contextMenu = document.getElementById('contextMenu');
+        const menuMostrarArchivo = document.getElementById('fileModal');
         let selectedItem = null;
         let nameFolder = 'null';
         let fechamod = null;
@@ -233,6 +268,47 @@
             contextMenu.style.display = 'none';
         }
 
+        const archivos = <?php echo json_encode($archivos); ?>;
+
+        function showFileModal(id) {
+            const fileContent = document.getElementById('fileContentMost');
+            fileContent.innerHTML = ''; // Limpia el contenido del modal
+
+            // Buscar el archivo por ID
+            const archivo = archivos.find(archivo => archivo._id === id);
+
+            if (archivo) {
+                const {
+                    extension,
+                    contenido
+                } = archivo; // Asegúrate de que 'contenido' esté presente en tu arreglo.
+
+                if (extension === '.jpg' || extension === '.png') {
+                    fileContent.innerHTML = `<img src="${contenido}" alt="Imagen" style="width: 100%;">`;
+                } else if (extension === '.txt') {
+                    fileContent.innerHTML = `<pre>${contenido}</pre>`;
+                } else if (extension === '.html') {
+                    // Asegúrate de que el contenido HTML no esté escapado
+                    fileContent.innerHTML = contenido; // Ya no es necesario usar <pre> si es HTML
+                } else {
+                    fileContent.innerHTML = 'Tipo de archivo no soportado para vista previa.';
+                }
+
+                new bootstrap.Modal(document.getElementById('fileModal')).show();
+            } else {
+                fileContent.innerHTML = 'Archivo no encontrado.';
+            }
+        }
+
+        function cerrarModales() {
+            // Cerrar el modal de archivo
+            const fileModal = bootstrap.Modal.getInstance(document.getElementById('fileModal'));
+            if (fileModal) {
+                fileModal.hide();
+            }
+            // También puedes limpiar el contenido del modal si es necesario
+            document.getElementById('fileContentMost').innerHTML = '';
+        }
 
 
         // Mostrar el formulario para agregar carpeta
@@ -246,24 +322,11 @@
             document.getElementById('fileForm').style.display = 'block';
             document.getElementById('folderForm').style.display = 'none';
         }
-
-
-
-        // Manejar el envío del formulario de archivo
-        document.getElementById('addFileForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const fileName = document.getElementById('fileName').value;
-            const fileExtension = document.getElementById('fileExtension').value;
-            const fileContent = document.getElementById('fileContent').value;
-            // Aquí puedes agregar la lógica para enviar los detalles del archivo al servidor
-            alert('Archivo creado: ' + fileName + fileExtension);
-            document.getElementById('addFileForm').reset();
-            $('#addModal').modal('hide'); // Cierra el modal
-        });
     </script>
 
     <!-- Incluye Bootstrap JavaScript para el funcionamiento adecuado de los componentes -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

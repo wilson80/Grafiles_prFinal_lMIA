@@ -2,6 +2,7 @@
 
 require_once "servicio/usuarios.servise.php";
 require_once "servicio/folder.servise.php";
+require_once "servicio/file.servise.php";
 
 
 class AdminControlador
@@ -10,10 +11,12 @@ class AdminControlador
     private $servicioCarpetas;
     private $usuarios; // Definimos la propiedad para los usuarios
     private $u;
+    private $servicioArchivos;
     public function __construct()
     {
         $this->servicioUsuarios = new UsuariosService();
         $this->servicioCarpetas =  new FolderService();
+        $this->servicioArchivos = new FilesService();
     }
 
     public function Inicio()
@@ -160,6 +163,7 @@ class AdminControlador
         $idCarpeta = $_GET['idC'];
         $ruta = $_GET['ruta'];
         $carpetas = $this->servicioCarpetas->obtenerCarpetasDeCarpetas($id, $idCarpeta);
+        $archivos = $this->servicioArchivos->getFiles($idCarpeta, $id);
         require_once "vista/areaAdmin/header.php";
         require_once "vista/carpetas/carpetasSub.php";
         require_once "vista/areaAdmin/foot.php";
@@ -173,13 +177,34 @@ class AdminControlador
         $n = $_GET['n'];
         $rol = $_GET['rol'];
         $id = $_GET['id'];
+        $ruta = $_GET['ruta'];
         $idCarpetaM = $_GET['idC'];
         $nameCarpeta = $_POST['folderName'];
         $this->servicioCarpetas->crearCarpetasEnCarpetas($nameCarpeta, $id, $idCarpetaM);
         // Aquí puedes agregar la lógica para guardar la carpeta, si no lo has hecho aún.
 
         // Redirigir usando header
-        header("Location: http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpetaM}");
+        header("Location: http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpetaM}&ruta={$ruta}");
+        exit();
+    }
+
+    public function GuardarArchivo()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $ruta = $_GET['ruta'];
+        $idCarpetaM = $_GET['idC'];
+
+        $data = [
+            'extension' => $_POST['fileExtension'],
+            'nombre' => $_POST['fileName'],
+            'contenido' => $_POST['fileContent'],
+            'idFM' => $idCarpetaM,
+            'idU' => $id
+        ];
+        $this->servicioArchivos->addFile($data);
+        header("Location: http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpetaM}&ruta={$ruta}");
         exit();
     }
 
