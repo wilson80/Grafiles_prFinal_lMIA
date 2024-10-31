@@ -1,8 +1,8 @@
 <?php
 
-define('API_URL', 'http://localhost:3500/usuarios');
+define('API_URLC', 'http://localhost:3500/carpetas');
 
-class UsuariosService
+class FolderService
 {
     function callAPI($method, $url, $data = false)
     {
@@ -38,7 +38,7 @@ class UsuariosService
         curl_close($curl);
 
         // Maneja el código de respuesta HTTP
-        if ($http_code !== 200) {
+        if ($http_code !== 200 && $http_code !== 201 && $http_code !== 204) {
             return [
                 'error' => true,
                 'message' => "Error HTTP Code: $http_code, Respuesta de la API: $response"
@@ -57,40 +57,56 @@ class UsuariosService
         return $decodedResponse; // Retorna la respuesta decodificada
     }
 
-
-    public function obtenerUsuarios()
+    public function crearCarpeta($data)
     {
-        return $this->callAPI('GET', API_URL);
-    }
-    public function obtenerUsuarioPorId($id)
-    {
-        $url = API_URL . '/' . $id; // Construye la URL con el ID
-        return $this->callAPI('GET', $url); // Llama a la API usando GET
+        return $this->callAPI('POST', API_URLC, $data); // Llama a la API usando POST
     }
 
-    public function guardarUsuario($data)
+    public function copiarCarpeta($idFM, $data)
     {
-        return $this->callAPI('POST', API_URL, $data); // Llama a la API usando POST
+        $url = API_URLC . '/copiar-carpeta/' . $idFM; // Construye la URL con el ID
+        return $this->callAPI('POST', $url, $data); // Llama a la API usando POST
     }
 
-    public function actualizarUsuario($id, $data)
+    public function obtenerCarpetaRaiz($idU) // Recibe el ID del usuario
     {
-        $url = API_URL . '/' . $id; // Construye la URL con el ID
+        $url = API_URLC . '/carpeta-raiz?idU=' . $idU; // Agrega el parámetro en la URL para GET
+        return $this->callAPI('GET', $url);
+    }
+
+    public function crearCarpetasEnCarpetas($nombre, $idU, $ficheroMadre)
+    {
+        // Construye el array de datos que se enviará a la API
+        $data = [
+            'nombre' => $nombre,
+            'idU' => $idU,
+            'ficheroMadre' => $ficheroMadre
+        ];
+
+        // Llama a la API usando POST
+        return $this->callAPI('POST', API_URLC . '/newCarpetInCarpet', $data);
+    }
+
+
+    public function obtenerCarpetasDeCarpetas($idU, $idC)
+    {
+        return $this->callAPI('GET', API_URLC . '/' . $idU . '/' . $idC); // Llama a la API usando GET
+    }
+
+    public function actualizarNombreCarpeta($id, $data)
+    {
+        $url = API_URLC . '/nombre-actualizar/' . $id; // Construye la URL con el ID
         return $this->callAPI('PUT', $url, $data); // Llama a la API usando PUT
     }
 
-    public function cambiarContrasena($id, $oldPassword, $newPassword)
+    public function moverCarpeta($id, $data)
     {
-        // Construye la URL para la actualización de contraseña
-        $url = API_URL . '/update-password/' . $id;
+        $url = API_URLC . '/mover_carpeta/' . $id; // Construye la URL con el ID
+        return $this->callAPI('PUT', $url, $data); // Llama a la API usando PUT
+    }
 
-        // Prepara los datos a enviar
-        $data = [
-            'oldPassword' => $oldPassword,
-            'newPassword' => $newPassword
-        ];
-
-        // Llama a la API usando PUT
-        return $this->callAPI('PUT', $url, $data);
+    public function eliminarCarpeta($id)
+    {
+        return $this->callAPI('DELETE', API_URLC . '/' . $id); // Llama a la API usando DELETE
     }
 }

@@ -17,7 +17,7 @@ echo "<script>
             } else if (usuario.rol === 3) {
                 window.location.href = 'http://localhost/proyecto_final_ts1/?c=usuarioregistrado&a=Inicio&n=' + usuario.nombres + '&rol=' + usuario.rol + '&id=' + usuario.id; // Redirigir a un dashboard de usuario registrado
             } else {
-                window.location.href = 'http://localhost/proyecto_final_ts1'; // Redirigir a un dashboard de usuario normal
+                window.location.href = 'http://localhost/grafiles_mia'; // Redirigir a un dashboard de usuario normal
             }
         } else {
             // Manejo de error si no hay usuario en localStorage

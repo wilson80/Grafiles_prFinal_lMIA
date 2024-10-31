@@ -32,7 +32,7 @@
 <body>
     <div class="container mt-4">
         <header class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Gestión de Archivos</h1>
+            <h1>GraFiles</h1>
             <div>
                 <!-- Icono de usuarios -->
                 <a href="http://localhost/grafiles_mia/?c=admin&a=Usuarios&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Usuarios">
@@ -50,7 +50,7 @@
                 </a>
 
                 <!-- Icono de carpetas -->
-                <a href="http://localhost/grafiles_mia/?c=admin&a=Carpetas&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Carpetas">
+                <a href="http://localhost/grafiles_mia/?c=admin&a=Carpetas&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=0x0" class="mr-3" title="Carpetas">
                     <i class="fas fa-folder notification-icon"></i> <!-- Icono de carpetas -->
                 </a>
 

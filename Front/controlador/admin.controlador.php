@@ -1,17 +1,19 @@
 <?php
 
 require_once "servicio/usuarios.servise.php";
-define('API_URL', 'http://localhost:3500/usuarios');
+require_once "servicio/folder.servise.php";
 
 
 class AdminControlador
 {
     private $servicioUsuarios;
+    private $servicioCarpetas;
     private $usuarios; // Definimos la propiedad para los usuarios
     private $u;
     public function __construct()
     {
         $this->servicioUsuarios = new UsuariosService();
+        $this->servicioCarpetas =  new FolderService();
     }
 
     public function Inicio()
@@ -104,5 +106,123 @@ class AdminControlador
                 </script>";
             exit();
         }
+    }
+
+    public function cambiarContrasenia()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+
+        require_once "vista/areaAdmin/header.php";
+        require_once "vista/cambioPassword/cambioPassword.php";
+        require_once "vista/areaAdmin/foot.php";
+    }
+
+    public function CambiarPassword()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+
+        if (isset($_POST['idU']) && $_POST['passwordant'] && $_POST['password2']) {
+            $this->servicioUsuarios->cambiarContrasena($_POST['idU'], $_POST['passwordant'], $_POST['password2']);
+            echo "<script>
+                    window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=Inicio&n=" . urlencode($n) . "&rol=" . $rol . "&id=" . $id . "';
+                    alert('Contraseña actualizada correctamente');
+                </script>";
+            exit();
+        }
+    }
+
+    public function Carpetas()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpeta = $_GET['idC'];
+        $ruta = "home";
+        if ($idCarpeta === '0x0') {
+            $carpetas = $this->servicioCarpetas->obtenerCarpetaRaiz($id);
+            require_once "vista/areaAdmin/header.php";
+            require_once "vista/carpetas/carpetas.php";
+            require_once "vista/areaAdmin/foot.php";
+
+            //var_dump($carpetas);
+        }
+    }
+
+    public function CarpetasSub()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpeta = $_GET['idC'];
+        $ruta = $_GET['ruta'];
+        $carpetas = $this->servicioCarpetas->obtenerCarpetasDeCarpetas($id, $idCarpeta);
+        require_once "vista/areaAdmin/header.php";
+        require_once "vista/carpetas/carpetasSub.php";
+        require_once "vista/areaAdmin/foot.php";
+
+        //var_dump($carpetas);
+
+    }
+
+    public function GuardarCarpeta()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpetaM = $_GET['idC'];
+        $nameCarpeta = $_POST['folderName'];
+        $this->servicioCarpetas->crearCarpetasEnCarpetas($nameCarpeta, $id, $idCarpetaM);
+        // Aquí puedes agregar la lógica para guardar la carpeta, si no lo has hecho aún.
+
+        // Redirigir usando header
+        header("Location: http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpetaM}");
+        exit();
+    }
+
+    public function RenombrarCarpeta()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpeta = $_GET['idCM'];
+        $rename = $_GET['rename'];
+        $ruta = $_GET['ruta'];
+
+        $data = [
+            'nombre' => $rename,
+            'ficheroMadre' => $idCarpeta
+        ];
+        $this->servicioCarpetas->actualizarNombreCarpeta($_GET['idC'], $data);
+        echo "<script>
+        history.replaceState(null, null, null);
+
+        // Navega a la nueva URL
+        window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpeta}&ruta={$ruta}';
+        history.replaceState(null, null, null);
+        </script>";
+        exit();
+    }
+
+    public function MoverPapelera()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpeta = $_GET['idCM'];
+        $idCEliminar = $_GET['idC'];
+        $ruta = $_GET['ruta'];
+        $this->servicioCarpetas->eliminarCarpeta($idCEliminar);
+        echo "<script>
+        history.replaceState(null, null, null);
+
+        // Navega a la nueva URL
+        window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpeta}&ruta={$ruta}';
+        history.replaceState(null, null, null);
+        </script>";
+        exit();
     }
 }
