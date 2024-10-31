@@ -12,10 +12,8 @@ echo "<script>
             // Verificar el rol y redirigir según sea necesario
             if (usuario.rol === 'administrador') {
                 window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=Inicio&n=' + usuario.nombre + '&rol=' + usuario.rol + '&id=' + usuario._id;  // Redirigir a un dashboard de administrador
-            } else if (usuario.rol === 2) {
-                window.location.href = 'http://localhost/proyecto_final_ts1/?c=publicacion&a=Inicio&n=' + usuario.nombres + '&rol=' + usuario.rol + '&id=' + usuario.id; // Redirigir a un dashboard de publicador
-            } else if (usuario.rol === 3) {
-                window.location.href = 'http://localhost/proyecto_final_ts1/?c=usuarioregistrado&a=Inicio&n=' + usuario.nombres + '&rol=' + usuario.rol + '&id=' + usuario.id; // Redirigir a un dashboard de usuario registrado
+            } else if (usuario.rol === 'empleado') {
+                window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=Inicio&n=' + usuario.nombre + '&rol=' + usuario.rol + '&id=' + usuario._id;            
             } else {
                 window.location.href = 'http://localhost/grafiles_mia'; // Redirigir a un dashboard de usuario normal
             }

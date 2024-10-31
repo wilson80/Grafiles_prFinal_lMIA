@@ -146,7 +146,42 @@ def create_routescarpetas(collection, collection_archivos):
             return jsonify([serialize_carpeta(c) for c in carpetas]), 200
         except Exception as e:
             return f'Error al obtener la carpeta raíz: {str(e)}', 500
+        
+    @carpetas_bp.route('/carpeta-compartida', methods=['GET'])
+    def get_carpeta_compartida():
+        idU = request.args.get('idU')  # Obtén el parámetro de la URL
+        try:
+          # Cambia find_many a find
+            carpeta = collection.find_one({"ficheroMadre": "1111111111", "id_usuario": idU})
+        
+        # Convierte el cursor a una lista para serializar
+            return jsonify(serialize_carpeta(carpeta)), 200
+        except Exception as e:
+            return f'Error al obtener la carpeta raíz: {str(e)}', 500
+        
+    # Función para obtener las carpetas eliminadas
+    @carpetas_bp.route('/carpetas-eliminadas', methods=['GET'])
+    def get_deleted_folders():
+        try:
+            carpetas = list(collection.find({'eliminada': True}).sort('nombre', 1))
+            carpetas = [serialize_carpeta(c) for c in carpetas]
+            return jsonify(carpetas), 200
+        except Exception as e:
+            return f'Error al obtener las carpetas eliminadas: {str(e)}', 500
 
+    @carpetas_bp.route('/eliminar-carpeta/<id>', methods=['DELETE'])
+    def delete_folder(id):
+        try:
+        # Intentar convertir el ID a ObjectId
+            carpeta_id = ObjectId(id)
+            result = collection.delete_one({'_id': carpeta_id})
+        
+            if result.deleted_count == 1:
+                return jsonify({"message": "Carpeta eliminada exitosamente"}), 200
+            else:
+                return jsonify({"message": "Carpeta no encontrada"}), 404
+        except Exception as e:
+            return f'Error al eliminar la carpeta: {str(e)}', 500
 
     # OBTENER CARPETAS O FICHEROS DE una carpeta
     @carpetas_bp.route('/<string:idU>/<string:idC>', methods=['GET'])

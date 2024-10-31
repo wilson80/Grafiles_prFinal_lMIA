@@ -74,6 +74,12 @@ class FolderService
         return $this->callAPI('GET', $url);
     }
 
+    public function obtenerCarpetaCompartida($idU) // Recibe el ID del usuario
+    {
+        $url = API_URLC . '/carpeta-compartida?idU=' . $idU; // Agrega el parámetro en la URL para GET
+        return $this->callAPI('GET', $url);
+    }
+
     public function crearCarpetasEnCarpetas($nombre, $idU, $ficheroMadre)
     {
         // Construye el array de datos que se enviará a la API
@@ -108,5 +114,18 @@ class FolderService
     public function eliminarCarpeta($id)
     {
         return $this->callAPI('DELETE', API_URLC . '/' . $id); // Llama a la API usando DELETE
+    }
+
+    public function obtenerCarpetasEliminadas()
+    {
+        $url = API_URLC . '/carpetas-eliminadas';
+        return $this->callAPI('GET', $url); // Llama a la API usando GET
+    }
+
+    // Función para eliminar una carpeta por su ID
+    public function eliminarCarpetaDelSistema($id)
+    {
+        $url = API_URLC . '/eliminar-carpeta/' . $id;
+        return $this->callAPI('DELETE', $url); // Llama a la API usando DELETE
     }
 }

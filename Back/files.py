@@ -62,9 +62,8 @@ def create_routesfiles(collection):
     @files_bp.route('/eliminados/<idC>', methods=['GET'])
     def get_deleted_files(idC):
         try:
-            archivos = list(collection.find({'id_fichero_madre': idC, 'eliminado': True}).sort('nombre', 1))
-            for archivo in archivos:
-                archivo['_id'] = str(archivo['_id'])
+            archivos = list(collection.find({'eliminado': True}).sort('nombre', 1))
+            archivos = [serialize_archivo(archivo) for archivo in archivos]
             return jsonify(archivos), 200
         except Exception as e:
             return f'Error al obtener los archivos eliminados: {str(e)}', 500
@@ -76,8 +75,7 @@ def create_routesfiles(collection):
             return 'Campos obligatorios', 400
         try:
             archivos = list(collection.find({'id_fichero_madre': idC, 'id_usuario': idU, 'compartido': True}).sort('nombre', 1))
-            for archivo in archivos:
-                archivo['_id'] = str(archivo['_id'])
+            archivos = [serialize_archivo(archivo) for archivo in archivos]
             return jsonify(archivos), 200
         except Exception as e:
             return f'Error al obtener los archivos compartidos: {str(e)}', 500
@@ -104,6 +102,8 @@ def create_routesfiles(collection):
         idFM = data.get('idFM')
 
         if not extension or not nombre or not contenido or not idArchivo or not idFM:
+            print({extension,nombre,contenido,idArchivo,idFM})
+            print("Todos los campos son obligatorios")
             return 'Todos los campos son obligatorios', 400
 
         try:
@@ -113,9 +113,11 @@ def create_routesfiles(collection):
             )
 
             if result.modified_count == 0:
+                print("Archivo no encontrado")
                 return 'Archivo no encontrado', 404
             return jsonify(message="Archivo actualizado exitosamente", idArchivo=idArchivo), 200
         except Exception as e:
+            print('Error al actualizar el archivo: {str(e)}',  {str(e)})
             return f'Error al actualizar el archivo: {str(e)}', 500
 
     # Función para compartir un archivo
@@ -128,6 +130,8 @@ def create_routesfiles(collection):
         idA = data.get('idA')
 
         if not idU or not idA or not idFM or not idUC:
+            print("Todos los datos son obligatorios")
+            console.log({idFM,idU,idUC,idA})
             return 'Todos los campos son obligatorios', 400
 
         try:

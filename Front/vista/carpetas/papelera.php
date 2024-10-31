@@ -57,19 +57,15 @@
 <body>
 
     <div class="area-principal" oncontextmenu="onRightClick(event, null, 0); return false;">
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Agregar</button>
         <div class="d-flex align-items-center mb-2">
-            <button class="btn btn-secondary ms-2 mr-3" onclick="window.history.back();">
-                <i class="bi bi-arrow-left"></i>
-            </button>
-            <strong><?= $ruta ?></strong>
+            <h3>Papelera</h3>
         </div>
 
         <div class="d-flex flex-wrap">
             <?php foreach ($carpetas as $carpeta): ?>
                 <div class="text-center mx-3 my-2 position-relative"
                     oncontextmenu="onRightClick(event, '<?php echo $carpeta['_id']; ?>','<?php echo $carpeta['nombre']; ?>',1,'<?php echo $carpeta['fechamod']; ?>'); return false;">
-                    <a href="http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?php echo $carpeta['_id']; ?>&ruta=<?= $ruta . "/" . $carpeta['nombre']; ?>" class="btn btn-link position-relative">
+                    <a href="" class="btn btn-link position-relative">
                         <i class="bi bi-folder-fill" style="font-size: 4rem; color: #007bff;"></i>
                     </a>
                     <div><?php echo htmlspecialchars($carpeta['nombre']); ?></div> <!-- Nombre de la carpeta debajo del ícono -->
@@ -116,71 +112,16 @@
 
     <!-- Menú contextual personalizado -->
     <div id="contextMenu" class="custom-context-menu">
-        <a href="#" onclick="renombrarCarpeta(); return false;">Renombrar</a>
-        <a href="#" onclick="moverAPapelera(); return false;">Mover a la papelera</a>
+        <a href="#" onclick="moverAPapelera(); return false;">Eliminar</a>
         <a href="#" onclick="mostrarPropiedades(); return false;">Propiedades</a>
     </div>
 
     <!-- Menú contextual personalizado de los archivos-->
     <div id="contextMenuFile" class="custom-context-menu">
-        <a href="#" onclick="editarArchivo(); return false;">Editar</a>
-        <a href="#" onclick="moverPapeleraArchivo(); return false;">Mover a la papelera</a>
-        <a href="#" onclick="compartirArchivo(); return false;">Compartir</a>
+        <a href="#" onclick="moverPapeleraArchivo(); return false;">Eliminar</a>
         <a href="#" onclick="mostrarPropiedades(); return false;">Propiedades</a>
     </div>
 
-    <!-- Modal para agregar carpeta o archivo -->
-    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Agregar Carpeta o Archivo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <button class="btn btn-info" onclick="showFolderForm()">Carpeta</button>
-                    <button class="btn btn-info" onclick="showFileForm()">Archivo</button>
-
-                    <!-- Formulario para agregar carpeta -->
-                    <div id="folderForm" style="display:none; margin-top: 20px;">
-                        <h6>Crear Carpeta</h6>
-                        <form id="addFolderForm" method="POST" action="http://localhost/grafiles_mia/?c=admin&a=GuardarCarpeta&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>&ruta=<?= $ruta ?>">
-                            <div class="mb-3">
-                                <label for="folderName" class="form-label">Nombre de la Carpeta</label>
-                                <input type="text" class="form-control" id="folderName" name="folderName" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Guardar Carpeta</button>
-                        </form>
-                    </div>
-
-                    <!-- Formulario para agregar archivo -->
-                    <div id="fileForm" style="display:none; margin-top: 20px;">
-                        <h6>Crear Archivo</h6>
-                        <form id="addFileForm" method="POST" action="http://localhost/grafiles_mia/?c=admin&a=GuardarArchivo&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>&ruta=<?= $ruta ?>">
-                            <div class="mb-3">
-                                <label for="fileName" class="form-label">Nombre del Archivo</label>
-                                <input type="text" class="form-control" id="fileName" name="fileName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fileExtension" class="form-label">Extensión</label>
-                                <select class="form-select" id="fileExtension" name="fileExtension" required>
-                                    <option value=".txt">.txt</option>
-                                    <option value=".html">.html</option>
-                                    <option value=".png">.png</option>
-                                    <option value=".jpg">.jpg</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fileContent" class="form-label">Contenido del Archivo</label>
-                                <textarea class="form-control" id="fileContent" name="fileContent" rows="5" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Guardar Archivo</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Modal para mostrar propiedades de la carpeta -->
     <div class="modal fade" id="propertiesModal" tabindex="-1" aria-labelledby="propertiesModalLabel" aria-hidden="true">
@@ -200,75 +141,6 @@
         </div>
     </div>
 
-
-    <!-- Modal para editar archivo -->
-    <div class="modal fade" id="editFileModal" tabindex="-1" aria-labelledby="editFileModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editFileModalLabel">Editar Archivo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editFileForm" method="POST" action="http://localhost/grafiles_mia/?c=admin&a=EditarArchivo&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>&ruta=<?= $ruta ?>">
-                        <input type="hidden" class="form-control" id="idEditFile" name="idEditFile">
-                        <div class="mb-3">
-                            <label for="editFileName" class="form-label">Nombre del Archivo</label>
-                            <input type="text" class="form-control" id="editFileName" name="editFileName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editFileExtension" class="form-label">Extensión</label>
-                            <select class="form-select" id="editFileExtension" name="editFileExtension" required>
-                                <option value=".txt">.txt</option>
-                                <option value=".html">.html</option>
-                                <option value=".png">.png</option>
-                                <option value=".jpg">.jpg</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editFileContent" class="form-label">Contenido del Archivo</label>
-                            <textarea class="form-control" id="editFileContent" name="editFileContent" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para compartir archivo con usuarios -->
-    <div class="modal fade" id="modalCompartirArchivos" tabindex="-1" aria-labelledby="modalCompartirArchivosLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCompartirArchivosLabel">Compartir Archivo con Usuarios</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Username</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($usuarios as $usuario): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($usuario['nombre']); ?></td>
-                                    <td><?php echo htmlspecialchars($usuario['username']); ?></td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" onclick="shareFile('<?php echo $usuario['_id']; ?>')">Compartir</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     <script>
@@ -314,63 +186,21 @@
             }
         });
 
-        function editarArchivo() {
-            contextMenuFile.style.display = 'none';
-            // Obtener el archivo seleccionado desde el arreglo archivos usando selectedItem
-            const archivo = archivos.find(archivo => archivo._id === selectedItem);
-            if (archivo) {
-                // Rellenar el modal de edición con los datos del archivo seleccionado
-                document.getElementById('idEditFile').value = selectedItem;
-                document.getElementById('editFileName').value = archivo.nombre;
-                document.getElementById('editFileExtension').value = archivo.extension;
-                document.getElementById('editFileContent').value = archivo.contenido;
-
-                // Mostrar el modal de edición
-                const editFileModal = new bootstrap.Modal(document.getElementById('editFileModal'));
-                editFileModal.show();
-            } else {
-                alert("Archivo no encontrado.");
-            }
-        }
 
         function moverPapeleraArchivo() {
             if (confirm("Desea mover a la papelera este archivo: " + nameFolder)) {
-                window.location.href = `http://localhost/grafiles_mia/?c=admin&a=MoverPapeleraArchivo&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idCM=<?= $idCarpeta ?>&idA=${encodeURIComponent(selectedItem)}&ruta=<?= $ruta ?>`;
+                window.location.href = `http://localhost/grafiles_mia/?c=admin&a=EliminarArchivosDelSistema&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=<?= $idCarpeta ?>&idA=${encodeURIComponent(selectedItem)}&ruta=papelera`;
             }
 
             contextMenu.style.display = 'none'; // Oculta el menú después de la acción
         }
 
-        function compartirArchivo() {
-            contextMenuFile.style.display = 'none';
-            const archivo = archivos.find(archivo => archivo._id === selectedItem);
-            if (archivo) {
-                $('#modalCompartirArchivos').modal('show');
-            }
-        }
 
-        function shareFile(idUser) {
-            window.location.href = `http://localhost/grafiles_mia/?c=admin&a=CompartirArchivo&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idCM=<?= $idCarpeta ?>&idA=${encodeURIComponent(selectedItem)}&ruta=<?= $ruta ?>&idU=${idUser}`;
-            //alert("Archivo compartido con " + idUser + " id de archivo: " + selectedItem);
-        }
-
-        // Funciones para cada acción del menú contextual
-        function renombrarCarpeta() {
-            const renombre = prompt('Ingrese un nuevo nombre para la carpeta:', nameFolder);
-
-            if (renombre && renombre.trim() !== "") {
-                // Redirige a la URL con el nuevo nombre de la carpeta como parámetro
-                window.location.href = `http://localhost/grafiles_mia/?c=admin&a=RenombrarCarpeta&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idCM=<?= $idCarpeta ?>&rename=${encodeURIComponent(renombre)}&idC=${encodeURIComponent(selectedItem)}&ruta=<?= $ruta ?>`;
-            } else {
-                alert('Por favor, ingrese un nombre válido para la carpeta.');
-            }
-            contextMenu.style.display = 'none'; // Oculta el menú después de la acción
-        }
 
 
         function moverAPapelera() {
             if (confirm("Desea mover a la papelera esta carpeta: " + nameFolder)) {
-                window.location.href = `http://localhost/grafiles_mia/?c=admin&a=MoverPapelera&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idCM=<?= $idCarpeta ?>&idC=${encodeURIComponent(selectedItem)}&ruta=<?= $ruta ?>`;
+                window.location.href = `http://localhost/grafiles_mia/?c=admin&a=EliminarCarpetaSistema&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=${encodeURIComponent(selectedItem)}`;
 
             }
 

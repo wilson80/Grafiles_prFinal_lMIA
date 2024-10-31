@@ -24,7 +24,7 @@ class AdminControlador
         $n = $_GET['n'];
         $rol = $_GET['rol'];
         $id = $_GET['id'];
-        $this->llavedeAcceso($_GET['rol']);
+        //$this->llavedeAcceso($_GET['rol']);
         require_once "vista/areaAdmin/header.php";
         require_once "vista/areaAdmin/foot.php";
     }
@@ -164,12 +164,39 @@ class AdminControlador
         $ruta = $_GET['ruta'];
         $carpetas = $this->servicioCarpetas->obtenerCarpetasDeCarpetas($id, $idCarpeta);
         $archivos = $this->servicioArchivos->getFiles($idCarpeta, $id);
-        require_once "vista/areaAdmin/header.php";
-        require_once "vista/carpetas/carpetasSub.php";
-        require_once "vista/areaAdmin/foot.php";
+        $usuarios = $this->servicioUsuarios->obtenerUsuarios();
+        if ($ruta === 'home/compartida') {
+            $archivosC = $this->servicioArchivos->getSharedFiles($idCarpeta, $id);
+            require_once "vista/areaAdmin/header.php";
+            require_once "vista/carpetas/compartidos.php";
+            require_once "vista/areaAdmin/foot.php";
+        } else {
+            require_once "vista/areaAdmin/header.php";
+            require_once "vista/carpetas/carpetasSub.php";
+            require_once "vista/areaAdmin/foot.php";
+        }
+
 
         //var_dump($carpetas);
 
+    }
+
+    public function EliminarArchivosDelSistema()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $ruta = $_GET['ruta'];
+        $idCarpetaM = $_GET['idC'];
+        $idA = $_GET['idA'];
+        $this->servicioArchivos->deleteFilePermanently($idA);
+        if ($ruta === 'papelera') {
+            header("Location: http://localhost/grafiles_mia/?c=admin&a=Papelera&n={$n}&rol={$rol}&id={$id}");
+            exit();
+        } else {
+            header("Location: http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpetaM}&ruta={$ruta}");
+            exit();
+        }
     }
 
     public function GuardarCarpeta()
@@ -248,6 +275,104 @@ class AdminControlador
         window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpeta}&ruta={$ruta}';
         history.replaceState(null, null, null);
         </script>";
+        exit();
+    }
+
+    public function EditarArchivo()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $ruta = $_GET['ruta'];
+        $idCarpetaM = $_GET['idC'];
+
+        $data = [
+            'extension' => $_POST['editFileExtension'],
+            'nombre' => $_POST['editFileName'],
+            'contenido' => $_POST['editFileContent'],
+            'idFM' => $idCarpetaM,
+            'idArchivo' =>  $_POST['idEditFile']
+        ];
+        $r = $this->servicioArchivos->editFile($data);
+
+        header("Location: http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpetaM}&ruta={$ruta}");
+        exit();
+    }
+
+    public function MoverPapeleraArchivo()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpeta = $_GET['idCM'];
+        $idAEliminar = $_GET['idA'];
+        $ruta = $_GET['ruta'];
+        $this->servicioArchivos->moveFileToTrash($idAEliminar);
+        echo "<script>
+        history.replaceState(null, null, null);
+
+        // Navega a la nueva URL
+        window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpeta}&ruta={$ruta}';
+        history.replaceState(null, null, null);
+        </script>";
+        exit();
+    }
+
+    public function CompartirArchivo()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idCarpeta = $_GET['idCM'];
+        $idA = $_GET['idA'];
+        $idU = $_GET['idU'];
+        $ruta = $_GET['ruta'];
+        $idFM = 'null';
+        $c = $this->servicioCarpetas->obtenerCarpetaCompartida($idU);
+        foreach ($c as $carpeta) {
+            $idFM = $carpeta; // Reemplaza 'propiedad' por el nombre de la propiedad que deseas obtener
+            break; // Esto detiene el bucle después del primer elemento
+        }
+
+        $data = [
+            'idFM' => $idFM,
+            'idU' => $idU,
+            'idUC' => $n,
+            'idA' => $idA
+        ];
+        $this->servicioArchivos->shareFile(($data));
+
+        echo "<script>
+        alert('Archivo compartido');
+
+        // Navega a la nueva URL
+        window.location.href = 'http://localhost/grafiles_mia/?c=admin&a=CarpetasSub&n={$n}&rol={$rol}&id={$id}&idC={$idCarpeta}&ruta={$ruta}';
+        history.replaceState(null, null, null);
+        </script>";
+        exit();
+    }
+
+    public function Papelera()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $this->llavedeAcceso(($rol));
+        $carpetas = $this->servicioCarpetas->obtenerCarpetasEliminadas();
+        $archivos = $this->servicioArchivos->getDeletedFiles('00');
+        require_once "vista/areaAdmin/header.php";
+        require_once "vista/carpetas/papelera.php";
+        require_once "vista/areaAdmin/foot.php";
+    }
+
+    public function EliminarCarpetaSistema()
+    {
+        $n = $_GET['n'];
+        $rol = $_GET['rol'];
+        $id = $_GET['id'];
+        $idC = $_GET['idC'];
+        $this->servicioCarpetas->eliminarCarpetaDelSistema($idC);
+        header("Location: http://localhost/grafiles_mia/?c=admin&a=Papelera&n={$n}&rol={$rol}&id={$id}");
         exit();
     }
 }

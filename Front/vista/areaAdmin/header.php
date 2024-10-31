@@ -34,31 +34,32 @@
         <header class="d-flex justify-content-between align-items-center mb-4">
             <h1>GraFiles</h1>
             <div>
-                <!-- Icono de usuarios -->
-                <a href="http://localhost/grafiles_mia/?c=admin&a=Usuarios&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Usuarios">
-                    <i class="fas fa-users notification-icon"></i> <!-- Icono de usuarios -->
-                </a>
+                <?php if ($rol === 'administrador'): ?>
+                    <!-- Icono de usuarios -->
+                    <a href="http://localhost/grafiles_mia/?c=admin&a=Usuarios&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Usuarios">
+                        <i class="fas fa-users notification-icon"></i>
+                    </a>
+
+                    <!-- Icono de papelera -->
+                    <a href="http://localhost/grafiles_mia/?c=admin&a=Papelera&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Papelera">
+                        <i class="fas fa-trash notification-icon"></i>
+                    </a>
+                <?php endif; ?>
 
                 <!-- Icono de cambiar contraseña -->
                 <a href="http://localhost/grafiles_mia/?c=admin&a=CambiarContrasenia&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Cambiar Contraseña">
-                    <i class="fas fa-key notification-icon"></i> <!-- Icono de cambiar contraseña -->
-                </a>
-
-                <!-- Icono de papelera -->
-                <a href="http://localhost/grafiles_mia/?c=admin&a=Papelera&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>" class="mr-3" title="Papelera">
-                    <i class="fas fa-trash notification-icon"></i> <!-- Icono de papelera -->
+                    <i class="fas fa-key notification-icon"></i>
                 </a>
 
                 <!-- Icono de carpetas -->
                 <a href="http://localhost/grafiles_mia/?c=admin&a=Carpetas&n=<?= $n ?>&rol=<?= $rol ?>&id=<?= $id ?>&idC=0x0" class="mr-3" title="Carpetas">
-                    <i class="fas fa-folder notification-icon"></i> <!-- Icono de carpetas -->
+                    <i class="fas fa-folder notification-icon"></i>
                 </a>
 
                 <!-- Icono de log out -->
                 <a href="http://localhost/grafiles_mia/?c=login&a=LogOut" title="Cerrar sesión">
-                    <i class="fas fa-sign-out-alt notification-icon"></i> <!-- Icono de log out -->
+                    <i class="fas fa-sign-out-alt notification-icon"></i>
                 </a>
             </div>
         </header>
-
     </div>
